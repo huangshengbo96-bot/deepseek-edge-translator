@@ -45,7 +45,6 @@ export default defineContentScript({
       if (event.key === 'Escape') ui.hide();
     }, true);
 
-    window.addEventListener('scroll', ui.hide, true);
     window.addEventListener('resize', ui.hide);
     window.addEventListener('blur', ui.hide);
 
@@ -164,7 +163,9 @@ function createTranslatorUi() {
     .top { display:flex; gap:11px; padding:15px 16px 11px; background:linear-gradient(145deg,#f7f8ff,#fff); border-bottom:1px solid #eef0f6; }
     .source { min-width:0; flex:1; font-size:13px; color:#5e6780; overflow-wrap:anywhere; }
     .kind { flex:none; height:22px; padding:1px 7px; border-radius:999px; color:#5262de; background:#e9ecff; font-size:11px; font-weight:700; text-transform:uppercase; }
-    .body { padding:15px 16px 14px; max-height:370px; overflow:auto; }
+    .body { padding:15px 16px 14px; max-height:min(370px,calc(100vh - 190px)); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#c8cee3 transparent; }
+    .body::-webkit-scrollbar { width:7px; }
+    .body::-webkit-scrollbar-thumb { border:2px solid transparent; border-radius:999px; background:#c8cee3; background-clip:padding-box; }
     .translation { font-size:19px; line-height:1.45; color:#111a33; font-weight:700; overflow-wrap:anywhere; }
     .phonetic { margin-top:3px; color:#717b96; font-size:12px; }
     .section { margin-top:13px; padding-top:12px; border-top:1px solid #eef0f5; }

@@ -12,9 +12,14 @@
         "phonetic": "",
         "entries": [],
         "keyPhrases": [
-          { "phrase": "hello", "meaning": "你好" }
+          { "phrase": "hello", "meaning": "你好；用于问候或引起注意" },
+          { "phrase": "world", "meaning": "世界；也可指特定领域或群体" },
+          { "phrase": "hello world", "meaning": "编程入门时常见的第一条输出内容" },
+          { "phrase": "say hello", "meaning": "问好；打招呼" },
+          { "phrase": "around the world", "meaning": "世界各地" },
+          { "phrase": "real world", "meaning": "现实世界；实际环境" }
         ],
-        "grammarNote": "常见的英文问候和示例短语。",
+        "grammarNote": "这是由感叹词 hello 与名词 world 构成的常见示例短语。在编程语境中，它常被用于演示一个新语言或运行环境能够成功输出文本；在普通交流中则可以理解为面向全世界的问候。",
         "example": {
           "english": "Hello world, this is my first program.",
           "chinese": "你好，世界，这是我的第一个程序。"

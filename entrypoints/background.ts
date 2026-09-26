@@ -63,13 +63,13 @@ async function handleMessage(message: unknown): Promise<ResponseEnvelope> {
       case 'TRANSLATE_SELECTION': {
         const selectionError = validateSelection(message.payload.text);
         if (selectionError) throw appError('INVALID_SELECTION', selectionError, false);
-        const settings = await getSettings();
-        if (!settings.apiKey) throw appError('API_KEY_MISSING', '请先在扩展设置中填写 DeepSeek API Key', false);
         const text = cleanSelectedText(message.payload.text);
         const now = Date.now();
         const source = sanitizeSource(message.payload.source, now);
         const cached = await findRecordByText(text);
         if (cached) return success(requestId, { record: await touchRecord(cached, source, now), cached: true });
+        const settings = await getSettings();
+        if (!settings.apiKey) throw appError('API_KEY_MISSING', '请先在扩展设置中填写 DeepSeek API Key', false);
         const result = await translateWithDeepSeek(text, settings.apiKey, settings.model);
         return success(requestId, { record: await createRecord(text, result, source, now), cached: false });
       }
