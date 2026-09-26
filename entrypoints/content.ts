@@ -224,7 +224,7 @@ function createTranslatorUi() {
 
   function showLoading(state: SelectionState) {
     const panel = element('div', 'panel loading');
-    panel.append(element('span', 'spinner'), element('span', '', 'DeepSeek 正在翻译…'));
+    panel.append(element('span', 'spinner'), element('span', '', 'DeepSeek 极速翻译中…'));
     render(panel, state.rect);
   }
 

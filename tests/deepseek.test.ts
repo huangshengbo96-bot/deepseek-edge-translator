@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { mapHttpError, parseDeepSeekResponse } from '../lib/deepseek';
+import { describe, expect, it, vi } from 'vitest';
+import { mapHttpError, outputTokenLimit, parseDeepSeekResponse, translateWithDeepSeek } from '../lib/deepseek';
 
 const validResult = {
   kind: 'word',
@@ -30,5 +30,24 @@ describe('DeepSeek response handling', () => {
   it('detects balance details', async () => {
     const response = new Response(JSON.stringify({ error: { code: 'insufficient_balance', message: 'Insufficient balance' } }), { status: 400 });
     await expect(mapHttpError(response)).resolves.toMatchObject({ code: 'INSUFFICIENT_BALANCE' });
+  });
+
+  it('disables reasoning and keeps short translations concise', async () => {
+    const fetcher = vi.fn(async () => new Response(JSON.stringify({
+      output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(validResult) }] }]
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    await translateWithDeepSeek('hello', 'test-key', 'deepseek-flash', fetcher as typeof fetch);
+    const request = fetcher.mock.calls[0]?.[1] as RequestInit;
+    const body = JSON.parse(String(request.body)) as { reasoning: { effort: string }; max_output_tokens: number; temperature: number };
+    expect(body.reasoning).toEqual({ effort: 'none' });
+    expect(body.temperature).toBe(0.2);
+    expect(body.max_output_tokens).toBe(600);
+  });
+
+  it('raises the output limit only for longer selections', () => {
+    expect(outputTokenLimit('short')).toBe(600);
+    expect(outputTokenLimit('a'.repeat(2000))).toBe(1550);
+    expect(outputTokenLimit('a'.repeat(5000))).toBe(1600);
   });
 });

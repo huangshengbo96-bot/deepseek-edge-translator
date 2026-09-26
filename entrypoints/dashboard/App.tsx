@@ -179,7 +179,7 @@ export function App() {
           <span>快捷翻译</span>
           <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
         </div>
-        <p className="sidebar-version">本地优先 · v0.1.2</p>
+        <p className="sidebar-version">本地优先 · v0.1.3</p>
       </aside>
 
       <main className="main-content">
