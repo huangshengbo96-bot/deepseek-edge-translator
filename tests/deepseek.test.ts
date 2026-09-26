@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mapHttpError, outputTokenLimit, parseDeepSeekResponse, translateWithDeepSeek } from '../lib/deepseek';
 
 const validResult = {
@@ -33,13 +33,16 @@ describe('DeepSeek response handling', () => {
   });
 
   it('disables reasoning and keeps short translations concise', async () => {
-    const fetcher = vi.fn(async () => new Response(JSON.stringify({
-      output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(validResult) }] }]
-    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    let requestBody = '';
+    const fetcher: typeof fetch = async (_input, init) => {
+      requestBody = String(init?.body ?? '');
+      return new Response(JSON.stringify({
+        output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(validResult) }] }]
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    };
 
     await translateWithDeepSeek('hello', 'test-key', 'deepseek-flash', fetcher as typeof fetch);
-    const request = fetcher.mock.calls[0]?.[1] as RequestInit;
-    const body = JSON.parse(String(request.body)) as { reasoning: { effort: string }; max_output_tokens: number; temperature: number };
+    const body = JSON.parse(requestBody) as { reasoning: { effort: string }; max_output_tokens: number; temperature: number };
     expect(body.reasoning).toEqual({ effort: 'none' });
     expect(body.temperature).toBe(0.2);
     expect(body.max_output_tokens).toBe(600);
