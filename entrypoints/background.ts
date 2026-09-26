@@ -7,10 +7,12 @@ import {
   exportJson,
   findRecordByText,
   getDueRecords,
+  getRecord,
   getStats,
   importBackup,
   listRecords,
   rateRecord,
+  replaceRecordResult,
   setMarked,
   setTags,
   touchRecord
@@ -67,11 +69,29 @@ async function handleMessage(message: unknown): Promise<ResponseEnvelope> {
         const now = Date.now();
         const source = sanitizeSource(message.payload.source, now);
         const cached = await findRecordByText(text);
-        if (cached) return success(requestId, { record: await touchRecord(cached, source, now), cached: true });
+        if (cached && !message.payload.force) {
+          return success(requestId, { record: await touchRecord(cached, source, now), cached: true });
+        }
         const settings = await getSettings();
         if (!settings.apiKey) throw appError('API_KEY_MISSING', '请先在扩展设置中填写 DeepSeek API Key', false);
         const result = await translateWithDeepSeek(text, settings.apiKey, settings.model);
+        if (cached) {
+          await touchRecord(cached, source, now);
+          const updated = await replaceRecordResult(cached.id, result);
+          if (!updated) throw appError('NOT_FOUND', '未找到该翻译记录', false);
+          return success(requestId, { record: updated, cached: false });
+        }
         return success(requestId, { record: await createRecord(text, result, source, now), cached: false });
+      }
+      case 'REFRESH_RECORD': {
+        const record = await getRecord(message.payload.id);
+        if (!record) throw appError('NOT_FOUND', '未找到该翻译记录', false);
+        const settings = await getSettings();
+        if (!settings.apiKey) throw appError('API_KEY_MISSING', '请先在扩展设置中填写 DeepSeek API Key', false);
+        const result = await translateWithDeepSeek(record.sourceText, settings.apiKey, settings.model);
+        const updated = await replaceRecordResult(record.id, result);
+        if (!updated) throw appError('NOT_FOUND', '未找到该翻译记录', false);
+        return success(requestId, updated);
       }
       case 'MARK_RECORD': {
         const record = await setMarked(message.payload.id, true);

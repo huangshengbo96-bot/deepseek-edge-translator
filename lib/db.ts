@@ -27,6 +27,21 @@ export async function findRecordByText(text: string): Promise<TranslationRecord 
   return db.records.where('normalizedKey').equals(normalizeText(text)).first();
 }
 
+export async function getRecord(id: string): Promise<TranslationRecord | undefined> {
+  return db.records.get(id);
+}
+
+export async function replaceRecordResult(
+  id: string,
+  result: TranslationResult
+): Promise<TranslationRecord | undefined> {
+  const record = await db.records.get(id);
+  if (!record) return undefined;
+  const updated = { ...record, result };
+  await db.records.put(updated);
+  return updated;
+}
+
 export async function touchRecord(
   record: TranslationRecord,
   source: SourceSnapshot,

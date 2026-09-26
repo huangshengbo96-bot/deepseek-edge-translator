@@ -58,6 +58,23 @@ blockquote { margin:10px 0 0; padding:8px 11px; border-left:3px solid #d8dcf6; c
 .review-card__answer { border-top:1px solid #eef0f4; padding-top:24px; }
 .review-card__translation { margin:0; color:#4052c7; font-size:23px; font-weight:750; }
 .muted { color:#8d94a6; font-size:12px; }
+.review-card__section { margin-top:22px; text-align:left; }
+.review-card__section h3 { margin:0 0 10px; color:#7f879a; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+.word-form-list { display:flex; flex-wrap:wrap; gap:7px; }
+.word-form { display:flex; align-items:baseline; gap:5px; padding:6px 9px; border:1px solid #e5e7f0; border-radius:9px; color:#303b59; background:#f8f9fc; font-size:12px; }
+.word-form small { color:#8a91a2; font-size:10px; }
+.sense-list { display:grid; gap:9px; }
+.sense-card { padding:11px 13px; border:1px solid #e8eaf2; border-radius:11px; background:#fafbfe; }
+.sense-card__meaning { color:#343e5a; font-size:13px; font-weight:650; }
+.sense-card__meaning span { display:inline-block; margin-right:7px; padding:1px 6px; border-radius:5px; color:#7254bf; background:#f0ebff; font-size:10px; font-weight:700; }
+.sense-card__example { margin-top:7px; padding-left:10px; border-left:2px solid #dfe3f3; }
+.sense-card__example p { margin:2px 0; color:#566079; font-size:12px; line-height:1.55; }
+.sense-card__example p + p { color:#858c9e; }
+.legacy-details { margin-top:18px; padding:12px; border:1px dashed #d8dcef; border-radius:11px; color:#6f7890; background:#f8f9ff; font-size:11px; text-align:left; }
+.legacy-details p { margin:0 0 8px; line-height:1.6; }
+.legacy-details .refresh-error { margin:8px 0 0; color:#b13f52; }
+.review-card blockquote { text-align:left; }
+.review-card blockquote strong { display:block; margin-bottom:4px; color:#7c8497; font-size:10px; }
 .rating-row { display:flex; justify-content:center; gap:10px; margin-top:25px; }
 .queue-note { color:#8c93a4; font-size:11px; text-align:center; }
 .button { border:0; border-radius:10px; padding:10px 14px; font-weight:650; }

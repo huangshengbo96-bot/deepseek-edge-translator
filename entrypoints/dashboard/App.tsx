@@ -65,6 +65,13 @@ export function App() {
     showNotice(rating === 'again' ? '10 分钟后再复习' : rating === 'hard' ? '已安排较短间隔' : '做得好，已延长复习间隔');
   };
 
+  const refreshRecord = async (record: TranslationRecord) => {
+    const updated = await sendRequest<TranslationRecord>(makeRequest('REFRESH_RECORD', { id: record.id }));
+    setDue((current) => current.map((item) => item.id === record.id ? updated : item));
+    setRecords((current) => current.map((item) => item.id === record.id ? updated : item));
+    showNotice('已补充多词性、词形变化和例句');
+  };
+
   const toggleMarked = async (record: TranslationRecord) => {
     const updated = await sendRequest<TranslationRecord>(makeRequest(record.marked ? 'UNMARK_RECORD' : 'MARK_RECORD', { id: record.id }));
     if (tab === 'marked' && !updated.marked) setRecords((current) => current.filter((item) => item.id !== record.id));
@@ -179,7 +186,7 @@ export function App() {
           <span>快捷翻译</span>
           <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
         </div>
-        <p className="sidebar-version">本地优先 · v0.1.3</p>
+        <p className="sidebar-version">本地优先 · v0.1.4</p>
       </aside>
 
       <main className="main-content">
@@ -187,7 +194,12 @@ export function App() {
           <Page title="今日复习" subtitle={`${stats.dueCount} 张卡片等待复习`}>
             {due.length ? (
               <div className="review-stack">
-                <ReviewCard key={due[0]!.id} record={due[0]!} onRate={(rating) => rate(due[0]!, rating)} />
+                <ReviewCard
+                  key={due[0]!.id}
+                  record={due[0]!}
+                  onRate={(rating) => rate(due[0]!, rating)}
+                  onRefresh={() => refreshRecord(due[0]!)}
+                />
                 {due.length > 1 && <p className="queue-note">完成后还有 {due.length - 1} 张</p>}
               </div>
             ) : (

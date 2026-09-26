@@ -60,12 +60,12 @@ export default defineContentScript({
       void translate();
     });
 
-    async function translate(): Promise<void> {
+    async function translate(force = false): Promise<void> {
       if (!state) return;
       ui.showLoading(state);
       try {
         const data = await sendRequest<{ record: TranslationRecord; cached: boolean }>(
-          makeRequest('TRANSLATE_SELECTION', { text: state.text, source: state.source })
+          makeRequest('TRANSLATE_SELECTION', { text: state.text, source: state.source, force })
         );
         state = { ...state, record: data.record };
         ui.showResult(
@@ -74,7 +74,7 @@ export default defineContentScript({
           () => toggleMark(),
           () => copyTranslation(),
           () => openDashboard(),
-          () => translate()
+          () => translate(true)
         );
       } catch (error) {
         const appError = getError(error);
@@ -174,6 +174,11 @@ function createTranslatorUi() {
     .section-title { color:#8a92a8; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px; }
     .item { margin:4px 0; color:#38415a; }
     .pos { display:inline-block; margin-right:6px; padding:0 5px; border-radius:5px; color:#7858c9; background:#f2edff; font-size:11px; }
+    .sense { margin:7px 0; }
+    .sense-example { margin:3px 0 0 4px; padding-left:9px; border-left:2px solid #e5e8f4; font-size:12px; }
+    .forms { display:flex; flex-wrap:wrap; gap:6px; }
+    .form { padding:4px 7px; border-radius:7px; color:#35405d; background:#f3f5fa; font-size:12px; }
+    .form small { margin-right:4px; color:#8991a5; }
     .example-en { color:#3e4965; }
     .example-zh { color:#7a8399; margin-top:2px; }
     .actions { display:flex; align-items:center; gap:7px; padding:10px 12px; border-top:1px solid #eef0f5; background:#fafbfe; }
@@ -251,9 +256,23 @@ function createTranslatorUi() {
     const body = element('div', 'body');
     body.append(element('div', 'translation', result.translation));
     if (result.phonetic) body.append(element('div', 'phonetic', result.phonetic));
-    if (result.entries.length) body.append(section('释义', result.entries.map((entry) => {
-      const row = element('div', 'item');
+    if (result.wordForms?.length) body.append(section('词形变化与派生词', [
+      result.wordForms.reduce((wrapper, item) => {
+        const chip = element('span', 'form');
+        chip.append(element('small', '', item.label), document.createTextNode(item.form));
+        wrapper.append(chip);
+        return wrapper;
+      }, element('div', 'forms'))
+    ]));
+    if (result.entries.length) body.append(section('释义与例句', result.entries.map((entry) => {
+      const row = element('div', 'item sense');
       row.append(element('span', 'pos', entry.partOfSpeech), document.createTextNode(entry.meaning));
+      if (entry.example && (entry.example.english || entry.example.chinese)) {
+        const example = element('div', 'sense-example');
+        if (entry.example.english) example.append(element('div', 'example-en', entry.example.english));
+        if (entry.example.chinese) example.append(element('div', 'example-zh', entry.example.chinese));
+        row.append(example);
+      }
       return row;
     })));
     if (result.keyPhrases.length) body.append(section('重点短语', result.keyPhrases.map((item) => element('div', 'item', `${item.phrase} · ${item.meaning}`))));
@@ -275,7 +294,10 @@ function createTranslatorUi() {
     const review = element('button', 'ghost review', '生词本');
     review.addEventListener('click', onReview);
     actions.append(mark, copy, retry, review);
-    const notice = element('div', 'notice', cached ? '已使用本地缓存，不会重复调用 API' : '已自动保存到翻译历史');
+    const legacyCachedWord = cached && result.kind === 'word' && result.wordForms === undefined;
+    const notice = element('div', 'notice', legacyCachedWord
+      ? '这是旧版缓存；点“重新翻译”可补充完整词义'
+      : cached ? '已使用本地缓存，不会重复调用 API' : '已自动保存到翻译历史');
     notice.dataset.notice = 'true';
     panel.append(top, body, actions, notice);
     enableDragging(panel, top);

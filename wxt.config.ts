@@ -5,7 +5,7 @@ export default defineConfig({
   manifest: {
     name: 'DeepSeek 划词翻译',
     description: '使用 DeepSeek 实时翻译英文划词，并保存到本地生词本进行复习。',
-    version: '0.1.3',
+    version: '0.1.4',
     permissions: ['storage', 'contextMenus'],
     host_permissions: ['https://api.deepseek.com/*'],
     icons: {

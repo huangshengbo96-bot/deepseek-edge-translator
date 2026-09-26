@@ -3,6 +3,15 @@ export type TranslationKind = 'word' | 'phrase' | 'sentence';
 export interface DictionaryEntry {
   partOfSpeech: string;
   meaning: string;
+  example?: {
+    english: string;
+    chinese: string;
+  };
+}
+
+export interface WordForm {
+  label: string;
+  form: string;
 }
 
 export interface KeyPhrase {
@@ -15,6 +24,7 @@ export interface TranslationResult {
   translation: string;
   phonetic: string;
   entries: DictionaryEntry[];
+  wordForms?: WordForm[];
   keyPhrases: KeyPhrase[];
   grammarNote: string;
   example: {
@@ -100,7 +110,8 @@ export interface AppError {
 }
 
 export type BackgroundRequest =
-  | { type: 'TRANSLATE_SELECTION'; requestId: string; payload: { text: string; source: Omit<SourceSnapshot, 'seenAt'> } }
+  | { type: 'TRANSLATE_SELECTION'; requestId: string; payload: { text: string; source: Omit<SourceSnapshot, 'seenAt'>; force?: boolean } }
+  | { type: 'REFRESH_RECORD'; requestId: string; payload: { id: string } }
   | { type: 'MARK_RECORD'; requestId: string; payload: { id: string } }
   | { type: 'UNMARK_RECORD'; requestId: string; payload: { id: string } }
   | { type: 'SET_TAGS'; requestId: string; payload: { id: string; tags: string[] } }

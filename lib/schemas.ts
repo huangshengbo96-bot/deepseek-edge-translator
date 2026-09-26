@@ -1,22 +1,29 @@
 import { z } from 'zod';
 
+const bilingualExampleSchema = z.object({
+  english: z.string().trim().max(1000),
+  chinese: z.string().trim().max(1000)
+});
+
 export const translationResultSchema = z.object({
   kind: z.enum(['word', 'phrase', 'sentence']),
   translation: z.string().trim().min(1).max(4000),
   phonetic: z.string().trim().max(200),
   entries: z.array(z.object({
     partOfSpeech: z.string().trim().max(100),
-    meaning: z.string().trim().min(1).max(1000)
+    meaning: z.string().trim().min(1).max(1000),
+    example: bilingualExampleSchema.optional().default({ english: '', chinese: '' })
   })).max(8),
+  wordForms: z.array(z.object({
+    label: z.string().trim().min(1).max(100),
+    form: z.string().trim().min(1).max(200)
+  })).max(12).optional().default([]),
   keyPhrases: z.array(z.object({
     phrase: z.string().trim().min(1).max(300),
     meaning: z.string().trim().min(1).max(1000)
   })).max(8),
   grammarNote: z.string().trim().max(1500),
-  example: z.object({
-    english: z.string().trim().max(1000),
-    chinese: z.string().trim().max(1000)
-  })
+  example: bilingualExampleSchema
 });
 
 export const sourceSnapshotSchema = z.object({

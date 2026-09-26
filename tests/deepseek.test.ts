@@ -5,7 +5,12 @@ const validResult = {
   kind: 'word',
   translation: '你好',
   phonetic: '/həˈləʊ/',
-  entries: [{ partOfSpeech: 'int.', meaning: '你好' }],
+  entries: [{
+    partOfSpeech: 'int.',
+    meaning: '你好',
+    example: { english: 'Hello there.', chinese: '你好。' }
+  }],
+  wordForms: [{ label: '名词', form: 'hello' }],
   keyPhrases: [],
   grammarNote: '',
   example: { english: 'Hello there.', chinese: '你好。' }
@@ -45,11 +50,13 @@ describe('DeepSeek response handling', () => {
     const body = JSON.parse(requestBody) as { reasoning: { effort: string }; max_output_tokens: number; temperature: number };
     expect(body.reasoning).toEqual({ effort: 'none' });
     expect(body.temperature).toBe(0.2);
-    expect(body.max_output_tokens).toBe(600);
+    expect(body.max_output_tokens).toBe(1200);
   });
 
   it('raises the output limit only for longer selections', () => {
-    expect(outputTokenLimit('short')).toBe(600);
+    expect(outputTokenLimit('short')).toBe(1200);
+    expect(outputTokenLimit('well-known')).toBe(1200);
+    expect(outputTokenLimit('short phrase')).toBe(600);
     expect(outputTokenLimit('a'.repeat(2000))).toBe(1550);
     expect(outputTokenLimit('a'.repeat(5000))).toBe(1600);
   });
