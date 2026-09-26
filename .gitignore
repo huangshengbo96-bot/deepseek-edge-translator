@@ -1,0 +1,16 @@
+node_modules/
+.output/
+.wxt/
+coverage/
+*.zip
+*.crx
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
+output/playwright/
+.playwright-cli/
+*.log
+.DS_Store
+Thumbs.db

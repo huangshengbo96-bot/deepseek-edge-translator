@@ -1,0 +1,40 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { createRecord, db, exportJson, importBackup, setMarked, touchRecord } from '../lib/db';
+import type { SourceSnapshot, TranslationResult } from '../lib/types';
+
+const result: TranslationResult = {
+  kind: 'word', translation: '测试', phonetic: '', entries: [], keyPhrases: [], grammarNote: '', example: { english: '', chinese: '' }
+};
+const source: SourceSnapshot = { title: 'Page', url: 'https://example.com/', contextSnippet: 'a test word', seenAt: 100 };
+
+describe('local database', () => {
+  beforeEach(async () => {
+    await db.open();
+    await db.records.clear();
+  });
+
+  afterEach(async () => {
+    await db.records.clear();
+  });
+
+  it('creates, touches and marks a record', async () => {
+    const created = await createRecord('Test', result, source, 100);
+    const touched = await touchRecord(created, { ...source, seenAt: 200 }, 200);
+    expect(touched.lookupCount).toBe(2);
+    const marked = await setMarked(created.id, true, 300);
+    expect(marked?.marked).toBe(true);
+    expect(marked?.dueAt).toBe(300);
+  });
+
+  it('imports a backup and merges duplicate normalized text', async () => {
+    const existing = await createRecord('Hello', result, source, 100);
+    const backup = JSON.parse(await exportJson(200));
+    backup.records[0].id = 'another-id';
+    backup.records[0].sourceText = '  HELLO ';
+    backup.records[0].lookupCount = 7;
+    const merged = await importBackup(backup);
+    expect(merged).toEqual({ imported: 0, merged: 1 });
+    expect(await db.records.count()).toBe(1);
+    expect((await db.records.get(existing.id))?.lookupCount).toBe(7);
+  });
+});

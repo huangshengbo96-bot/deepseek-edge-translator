@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "exportedAt": 1790390400000,
+  "records": [
+    {
+      "id": "sample-hello",
+      "normalizedKey": "hello world",
+      "sourceText": "Hello world",
+      "result": {
+        "kind": "phrase",
+        "translation": "你好，世界",
+        "phonetic": "",
+        "entries": [],
+        "keyPhrases": [
+          { "phrase": "hello", "meaning": "你好" }
+        ],
+        "grammarNote": "常见的英文问候和示例短语。",
+        "example": {
+          "english": "Hello world, this is my first program.",
+          "chinese": "你好，世界，这是我的第一个程序。"
+        }
+      },
+      "lookupCount": 2,
+      "sources": [
+        {
+          "title": "Example Domain",
+          "url": "https://example.com/",
+          "contextSnippet": "Hello world is a classic first example.",
+          "seenAt": 1790390400000
+        }
+      ],
+      "firstSeenAt": 1790390400000,
+      "lastSeenAt": 1790390400000,
+      "marked": true,
+      "tags": ["示例", "问候"],
+      "review": {
+        "intervalDays": 0,
+        "dueAt": 1,
+        "lapses": 0,
+        "reviewCount": 0
+      },
+      "dueAt": 1
+    }
+  ]
+}

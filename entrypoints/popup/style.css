@@ -1,0 +1,28 @@
+:root { color-scheme: light; font-family: Inter,"Segoe UI","Microsoft YaHei",sans-serif; color:#17213c; background:#f6f7fb; }
+* { box-sizing:border-box; }
+body { margin:0; min-width:360px; }
+button { font:inherit; }
+.popup-shell { width:360px; padding:17px; background:radial-gradient(circle at 92% 0,#e8e8ff 0,transparent 38%),#f8f9fc; }
+.popup-header { display:flex; align-items:center; gap:11px; }
+.logo { width:40px; height:40px; display:grid; place-items:center; border-radius:13px; color:#fff; font-weight:800; font-size:19px; background:linear-gradient(135deg,#476bff,#7047eb); box-shadow:0 8px 20px rgba(79,97,235,.24); }
+h1 { margin:0; font-size:15px; }
+.popup-header p { margin:2px 0 0; color:#7c849a; font-size:11px; }
+.status-dot { margin-left:auto; width:9px; height:9px; border-radius:50%; background:#d6a23a; box-shadow:0 0 0 4px rgba(214,162,58,.12); }
+.status-dot.is-ready { background:#2aae79; box-shadow:0 0 0 4px rgba(42,174,121,.12); }
+.due-card { margin-top:18px; display:flex; justify-content:space-between; align-items:center; padding:17px; border-radius:17px; color:white; background:linear-gradient(135deg,#26345e,#5366ef); box-shadow:0 12px 26px rgba(40,56,115,.2); }
+.due-card div { display:flex; flex-direction:column; }
+.eyebrow { color:#dbe0ff; font-size:11px; }
+.due-card strong { margin-top:1px; font-size:32px; line-height:1; }
+.due-card button { border:0; padding:8px 11px; border-radius:9px; color:#354492; background:#fff; font-weight:700; cursor:pointer; }
+.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:10px; }
+.stats-row span { padding:10px 12px; border:1px solid #e9ebf2; border-radius:11px; color:#727b92; background:#fff; font-size:12px; }
+.stats-row strong { color:#2d3754; margin-right:3px; }
+.recent { margin-top:17px; }
+.section-head { display:flex; align-items:center; justify-content:space-between; }
+h2 { margin:0 0 8px; font-size:12px; color:#616b84; }
+.recent-item { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; padding:10px 2px; border-bottom:1px solid #e9ebf1; font-size:12px; }
+.recent-item span,.recent-item strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.recent-item strong { text-align:right; color:#4f5fcd; }
+.empty { margin:0; padding:13px; color:#81899c; border:1px dashed #d9ddea; border-radius:11px; background:#fff; font-size:12px; }
+.settings-link { width:100%; margin-top:14px; padding:8px; border:0; color:#5261cf; background:transparent; cursor:pointer; font-weight:650; }
+.error { color:#bd354a; font-size:12px; }
