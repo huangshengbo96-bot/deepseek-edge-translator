@@ -160,8 +160,10 @@ function createTranslatorUi() {
     .ghost { color:#46506b; background:#f3f5fa; border-radius:9px; padding:7px 10px; }
     .ghost:hover { background:#e8ebf4; }
     .card { width:370px; max-width:calc(100vw - 24px); }
-    .top { display:flex; gap:11px; padding:15px 16px 11px; background:linear-gradient(145deg,#f7f8ff,#fff); border-bottom:1px solid #eef0f6; }
+    .top { display:flex; align-items:center; gap:9px; padding:12px 13px 10px 16px; cursor:grab; user-select:none; touch-action:none; background:linear-gradient(145deg,#f7f8ff,#fff); border-bottom:1px solid #eef0f6; }
+    .top:active { cursor:grabbing; }
     .source { min-width:0; flex:1; font-size:13px; color:#5e6780; overflow-wrap:anywhere; }
+    .drag-hint { flex:none; padding:2px 6px; border-radius:6px; color:#8b93aa; background:#f0f2f8; font-size:10px; white-space:nowrap; }
     .kind { flex:none; height:22px; padding:1px 7px; border-radius:999px; color:#5262de; background:#e9ecff; font-size:11px; font-weight:700; text-transform:uppercase; }
     .body { padding:15px 16px 14px; max-height:min(370px,calc(100vh - 190px)); overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#c8cee3 transparent; }
     .body::-webkit-scrollbar { width:7px; }
@@ -239,7 +241,13 @@ function createTranslatorUi() {
     const result = record.result;
     const panel = element('div', 'panel card');
     const top = element('div', 'top');
-    top.append(element('div', 'source', state.text), element('span', 'kind', kindLabel(result.kind)));
+    top.title = '按住这里拖动翻译卡';
+    top.setAttribute('aria-label', '拖动翻译卡');
+    top.append(
+      element('div', 'source', state.text),
+      element('span', 'drag-hint', '⠿ 拖动'),
+      element('span', 'kind', kindLabel(result.kind))
+    );
     const body = element('div', 'body');
     body.append(element('div', 'translation', result.translation));
     if (result.phonetic) body.append(element('div', 'phonetic', result.phonetic));
@@ -270,6 +278,7 @@ function createTranslatorUi() {
     const notice = element('div', 'notice', cached ? '已使用本地缓存，不会重复调用 API' : '已自动保存到翻译历史');
     notice.dataset.notice = 'true';
     panel.append(top, body, actions, notice);
+    enableDragging(panel, top);
     render(panel, state.rect);
   }
 
@@ -314,6 +323,36 @@ function createTranslatorUi() {
 
   function hide() {
     host.style.display = 'none';
+  }
+
+  function enableDragging(panel: HTMLElement, handle: HTMLElement) {
+    handle.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      const startRect = host.getBoundingClientRect();
+      const startX = event.clientX;
+      const startY = event.clientY;
+      handle.setPointerCapture(event.pointerId);
+
+      const move = (moveEvent: PointerEvent) => {
+        const maxLeft = Math.max(8, window.innerWidth - panel.offsetWidth - 8);
+        const maxTop = Math.max(8, window.innerHeight - panel.offsetHeight - 8);
+        const left = Math.max(8, Math.min(startRect.left + moveEvent.clientX - startX, maxLeft));
+        const top = Math.max(8, Math.min(startRect.top + moveEvent.clientY - startY, maxTop));
+        host.style.left = `${Math.round(left)}px`;
+        host.style.top = `${Math.round(top)}px`;
+      };
+
+      const stop = () => {
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', stop);
+        handle.removeEventListener('pointercancel', stop);
+      };
+
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', stop);
+      handle.addEventListener('pointercancel', stop);
+    });
   }
 
   return { host, hide, showToolbar, showLoading, showResult, showError, showCenteredError, updateMark, showInlineNotice };
